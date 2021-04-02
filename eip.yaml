@@ -1,0 +1,7 @@
+apiVersion: network.kubesphere.io/v1alpha2
+kind: Eip
+metadata:
+  namespace: istio-system
+  name: porter-bgp-eip
+spec:
+  address: 172.22.0.2-172.22.0.10

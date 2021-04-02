@@ -1,0 +1,7 @@
+apiVersion: network.kubesphere.io/v1alpha2
+kind: BgpConf
+metadata:
+  name: default
+spec:
+  as: 64512
+  listenPort: 179

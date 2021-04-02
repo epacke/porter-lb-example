@@ -1,0 +1,17 @@
+apiVersion: network.kubesphere.io/v1alpha2
+kind: BgpPeer
+metadata:
+  name: fortigate-01
+spec:
+  conf:
+    peerAs: 64513
+    neighborAddress: 192.168.70.1
+  afiSafis:
+    - config:
+        family:
+          afi: AFI_IP
+          safi: SAFI_UNICAST
+        enabled: true
+      addPaths:
+        config:
+          sendMax: 20

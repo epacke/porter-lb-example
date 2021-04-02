@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: porter-manager
+    control-plane: porter-manager
+  name: porter-manager
+  namespace: porter-system
+spec:
+  selector:
+    matchLabels:
+      app: porter-manager
+      control-plane: porter-manager
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: porter-manager
+        control-plane: porter-manager
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - porter-manager
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - --api-hosts=:50051
+        - --webhook-port=443
+        command:
+        - porter-manager
+        env:
+        - name: PORTER_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        image: kubesphere/porter:v0.4.1
+        imagePullPolicy: IfNotPresent
+        name: porter-manager
+        ports:
+        - containerPort: 443
+          name: webhook
+          protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - |
+              gobgp -p 50051 global
+          failureThreshold: 3
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+            - SYS_TIME
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs/
+          name: webhook-cert
+          readOnly: true
+      hostNetwork: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      terminationGracePeriodSeconds: 10
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+      volumes:
+      - name: webhook-cert
+        secret:
+          items:
+          - key: key
+            path: tls.key
+          - key: cert
+            path: tls.crt
+          secretName: porter-admission
