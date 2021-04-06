@@ -5,7 +5,7 @@ metadata:
 spec:
   conf:
     peerAs: 64513
-    neighborAddress: 192.168.70.1
+    neighborAddress: 192.168.1.1
   afiSafis:
     - config:
         family:

@@ -3,8 +3,8 @@ kind: Service
 metadata:
   annotations:
       lb.kubesphere.io/v1alpha1: porter
-      protocol.porter.kubesphere.io/v1alpha1: bgp # Added
-      eip.porter.kubesphere.io/v1alpha2: porter-bgp-eip # Added
+      protocol.porter.kubesphere.io/v1alpha1: bgp
+      eip.porter.kubesphere.io/v1alpha2: porter-bgp-eip
   labels:
     app: istio-ingressgateway
     install.operator.istio.io/owning-resource: unknown
@@ -44,6 +44,6 @@ spec:
     app: istio-ingressgateway
     istio: ingressgateway
   sessionAffinity: None
-  type: LoadBalancer #Added
+  type: LoadBalancer
 status:
   loadBalancer: {}
